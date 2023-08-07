@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		DeployToSimhub.ps1 = DeployToSimhub.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fam.DataGathering.SimhubPlugin.WebApi", "Fam.DataGathering.SimhubPlugin.WebApi\Fam.DataGathering.SimhubPlugin.WebApi.csproj", "{D7163D5C-721D-4C1B-814F-4A67FCE8B3B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7163D5C-721D-4C1B-814F-4A67FCE8B3B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7163D5C-721D-4C1B-814F-4A67FCE8B3B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7163D5C-721D-4C1B-814F-4A67FCE8B3B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7163D5C-721D-4C1B-814F-4A67FCE8B3B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
