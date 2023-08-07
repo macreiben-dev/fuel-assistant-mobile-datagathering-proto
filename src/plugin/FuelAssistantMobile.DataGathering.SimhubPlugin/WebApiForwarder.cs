@@ -1,13 +1,9 @@
 ﻿using FuelAssistantMobile.DataGathering.SimhubPlugin.Aggregations;
 using FuelAssistantMobile.DataGathering.SimhubPlugin.Logging;
+using FuelAssistantMobile.DataGathering.SimhubPlugin.PluginManagerWrappers;
 using FuelAssistantMobile.DataGathering.SimhubPlugin.Repositories;
 using GameReaderCommon;
 using SimHub.Plugins;
-using System;
-using System.Data.SqlTypes;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Timers;
 
 namespace FuelAssistantMobile.DataGathering.SimhubPlugin
@@ -66,7 +62,6 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public PluginManager PluginManager { set => _pluginManager = value; }
 
         // ===========================================================
-        // ===========================================================
 
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
         {
@@ -120,7 +115,6 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             _logger.Info("Starting Fam Data Gathering plugin DONE!");
         }
 
-        // ===========================================================
         // ===========================================================
 
         // THOUGHT: this one should be moved in a dedicated class.
