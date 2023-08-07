@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuelAssistantMobile.DataGathering.SimhubPlugin", "FuelAssistantMobile.DataGathering.SimhubPlugin\FuelAssistantMobile.DataGathering.SimhubPlugin.csproj", "{7DD3A616-AF34-4B0C-91A9-360FF2AB05C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fam.DataGathering.ShPlugin", "Fam.DataGathering.ShPlugin\Fam.DataGathering.ShPlugin.csproj", "{8673215D-48F1-4A95-9AEC-61B614EE8CE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DD3A616-AF34-4B0C-91A9-360FF2AB05C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD3A616-AF34-4B0C-91A9-360FF2AB05C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD3A616-AF34-4B0C-91A9-360FF2AB05C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD3A616-AF34-4B0C-91A9-360FF2AB05C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8673215D-48F1-4A95-9AEC-61B614EE8CE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0FD2099-F50A-4E48-B015-29F53883EAE8}
+	EndGlobalSection
+EndGlobal
