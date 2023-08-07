@@ -1,36 +1,37 @@
 ﻿using SimHub.Plugins;
 using System;
 
-namespace FuelAssistantMobile.DataGathering.SimhubPlugin
+namespace FuelAssistantMobile.DataGathering.SimhubPlugin.PluginManagerWrappers
 {
     public sealed class PluginManagerWrapper : IPluginRecordRepository
     {
+        private readonly IPluginManagerAdapter _pluginManager;
         private readonly bool _isGameRunning;
         private readonly string _sessionTimeLeft;
 
-        public PluginManagerWrapper(PluginManager pluginManager)
+        public PluginManagerWrapper(IPluginManagerAdapter pluginManager)
         {
-            _isGameRunning = ToBoolean("DataCorePlugin.GameRunning", pluginManager);
-
-            _sessionTimeLeft = ToString("DataCorePlugin.GameData.SessionTimeLeft", pluginManager);
+            _pluginManager = pluginManager;
         }
 
         // ==================================================
 
-        public bool IsGameRunning => _isGameRunning;
+        public bool IsGameRunning => 
+            ToBoolean("DataCorePlugin.GameRunning", _pluginManager);
 
-        public string SessionTimeLeft => _sessionTimeLeft;
+        public string SessionTimeLeft => 
+            ToString("DataCorePlugin.GameData.SessionTimeLeft", _pluginManager);
 
         // ==================================================
 
-        private string ToString(string key, PluginManager pluginManager)
+        private string ToString(string key, IPluginManagerAdapter pluginManager)
         {
             var data = pluginManager.GetPropertyValue(key);
 
             return data.ToString();
         }
 
-        private bool ToBoolean(string key, PluginManager pluginManager)
+        private bool ToBoolean(string key, IPluginManagerAdapter pluginManager)
         {
             var data = pluginManager.GetPropertyValue(key);
 
