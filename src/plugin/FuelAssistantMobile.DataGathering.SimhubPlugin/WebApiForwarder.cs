@@ -19,16 +19,15 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
     {
         private const int Frequency = 10; // 10Hz
 
-        // THOUGHT: make this configurable.
-        private const string WebApiUrl = "https://localhost:32786/Inbound";
-
-        private HttpClient _httpClient;
         private Timer _postTimer;
         private Timer _autoReactivate;
-        private ILiveAggregator _liveAggregator;
-        private IStagingDataRepository _dataRepository;
+        
+        private readonly ILiveAggregator _liveAggregator;
+        private readonly IStagingDataRepository _dataRepository;
+        private readonly IPluginRecordFactory _pluginRecordFactory;
         private readonly IStagingDataRepository dataRepository;
-        private ILogger _logger;
+        private readonly ILogger _logger;
+
         private PluginManager _pluginManager;
 
         private int _internalErrorCount = 0;
@@ -39,7 +38,8 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             : this(
                   new SimhubLogger(),
                   new LiveAggregator(),
-                  new FamRemoteRepository())
+                  new FamRemoteRepository(),
+                  new PluginRecordFactory())
         {
 
         }
@@ -47,10 +47,9 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public WebApiForwarder(
             ILogger logger,
             ILiveAggregator aggregator,
-            IStagingDataRepository dataRepository)
+            IStagingDataRepository dataRepository,
+            IPluginRecordFactory pluginRecordFactory)
         {
-            _httpClient = new HttpClient();
-
             _postTimer = new Timer(1000 / Frequency); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
             _postTimer.Elapsed += PostData;
 
@@ -60,6 +59,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             _liveAggregator = aggregator;
 
             _dataRepository = dataRepository;
+            _pluginRecordFactory = pluginRecordFactory;
             _logger = logger;
         }
 
@@ -71,16 +71,16 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
         {
             // THOUGHT: add call to service here to grab the data we want from plugin manager
-            var start = pluginManager.GetPropertyValue("DataCorePlugin.GameRunning");
-            bool isGameRunning = Convert.ToBoolean(start);
+            IPluginRecordRepository pluginRecordRepository 
+                = _pluginRecordFactory.GetInstance(pluginManager);
+            
+            var isGameRunning = pluginRecordRepository.IsGameRunning;
 
             if (!_firstLaunch && isGameRunning)
             {
                 Start();
 
-                var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
-
-                _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
+                UpdateAggregator(pluginRecordRepository);
 
                 _firstLaunch = true;
             }
@@ -96,9 +96,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             {
                 Start();
 
-                var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
-
-                _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
+                UpdateAggregator(pluginRecordRepository);
 
                 return;
             }
@@ -115,7 +113,11 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 
         public void Init(PluginManager pluginManager)
         {
+            _logger.Info("Starting Fam Data Gathering plugin ...");
+            
             Start();
+
+            _logger.Info("Starting Fam Data Gathering plugin DONE!");
         }
 
         // ===========================================================
@@ -134,6 +136,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
                 catch { }
 
                 _logger.Error("WebAPI post stoped.");
+
                 return;
             }
 
@@ -173,6 +176,13 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
                 _logger.Error($"Issue during posting [{ex.WebApiUrl}] - [{_internalErrorCount}] error count.");
                 _logger.Error($"API failed returned code is not OK - [{ex.StatusCode}]");
             }
+        }
+
+        private void UpdateAggregator(IPluginRecordRepository racingDataRepository)
+        {
+            var gameDataSessionTimeLeft = racingDataRepository.SessionTimeLeft;
+
+            _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
         }
 
         private void Start()
