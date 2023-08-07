@@ -5,31 +5,34 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 {
     public sealed class PluginManagerWrapper : IPluginRecordRepository
     {
-        private PluginManager _pluginManager;
+        private readonly bool _isGameRunning;
+        private readonly string _sessionTimeLeft;
 
         public PluginManagerWrapper(PluginManager pluginManager)
         {
-            _pluginManager = pluginManager;
+            _isGameRunning = ToBoolean("DataCorePlugin.GameRunning", pluginManager);
+
+            _sessionTimeLeft = ToString("DataCorePlugin.GameData.SessionTimeLeft", pluginManager);
         }
 
         // ==================================================
 
-        public bool IsGameRunning => ToBoolean("DataCorePlugin.GameRunning");
+        public bool IsGameRunning => _isGameRunning;
 
-        public string SessionTimeLeft => ToString("DataCorePlugin.GameData.SessionTimeLeft");
+        public string SessionTimeLeft => _sessionTimeLeft;
 
         // ==================================================
 
-        private string ToString(string key)
+        private string ToString(string key, PluginManager pluginManager)
         {
-            var data = _pluginManager.GetPropertyValue(key);
+            var data = pluginManager.GetPropertyValue(key);
 
             return data.ToString();
         }
 
-        private bool ToBoolean(string key)
+        private bool ToBoolean(string key, PluginManager pluginManager)
         {
-            var data = _pluginManager.GetPropertyValue(key);
+            var data = pluginManager.GetPropertyValue(key);
 
             if (data == null)
             {
