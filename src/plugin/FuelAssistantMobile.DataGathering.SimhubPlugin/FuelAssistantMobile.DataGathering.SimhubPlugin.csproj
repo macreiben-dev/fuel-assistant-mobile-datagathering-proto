@@ -66,6 +66,7 @@
     <Compile Include="Aggregations\LiveAggregator.cs" />
     <Compile Include="IPluginRecordFactory.cs" />
     <Compile Include="IPluginRecordRepository.cs" />
+    <Compile Include="IWebApiForwarder.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\SimhubLogger.cs" />
     <Compile Include="PluginManagerWrappers\IPluginManagerAdapter.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Repositories\IStagingDataRepository.cs" />
     <Compile Include="Repositories\StatusCodeNotOkException.cs" />
     <Compile Include="WebApiForwarder.cs" />
+    <Compile Include="WebApiForwarderService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
