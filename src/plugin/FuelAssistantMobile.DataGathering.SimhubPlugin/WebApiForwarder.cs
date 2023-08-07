@@ -16,14 +16,15 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
     public sealed partial class WebApiForwarder : IDataPlugin
     {
         private const int Frequency = 10; // 10Hz
+
+        // THOUGHT: make this configurable.
+        private const string WebApiUrl = "https://localhost:32782/Inbound";
+
         private HttpClient _httpClient;
         private Timer _postTimer;
         private ILiveAggregator _liveAggregator;
         private ILogger _logger;
         private PluginManager _pluginManager;
-
-        // THOUGHT: make this configurable.
-        private readonly string webApiUrl = "https://localhost:32781/inbound"; // Replace with your WebAPI URL
 
         public WebApiForwarder()
             : this(new SimhubLogger(), new LiveAggregator())
@@ -95,7 +96,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
                 content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
                 // Post the data to the WebAPI
-                var response = await _httpClient.PostAsync(webApiUrl, content);
+                var response = await _httpClient.PostAsync(WebApiUrl, content);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
