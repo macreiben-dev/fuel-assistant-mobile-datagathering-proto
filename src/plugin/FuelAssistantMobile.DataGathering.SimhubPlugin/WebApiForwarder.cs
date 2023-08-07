@@ -4,6 +4,7 @@ using FuelAssistantMobile.DataGathering.SimhubPlugin.Repositories;
 using GameReaderCommon;
 using SimHub.Plugins;
 using System;
+using System.Data.SqlTypes;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -32,6 +33,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 
         private int _internalErrorCount = 0;
         private bool _notifiedStop = false;
+        private bool _firstLaunch = false;
 
         public WebApiForwarder()
             : this(
@@ -69,50 +71,55 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
         {
             // THOUGHT: add call to service here to grab the data we want from plugin manager
-
-            if (_notifiedStop) return;
-
             var start = pluginManager.GetPropertyValue("DataCorePlugin.GameRunning");
+            bool isGameRunning = Convert.ToBoolean(start);
 
-            if (!Convert.ToBoolean(start))
+            if (!_firstLaunch && isGameRunning)
             {
+                Start();
+
+                var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
+
+                _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
+
+                _firstLaunch = true;
+            }
+
+            if (!isGameRunning)
+            {
+                Stop();
+
                 return;
             }
 
-            var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
+            if(isGameRunning)
+            {
+                Start();
 
-            _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
+                var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
+
+                _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
+
+                return;
+            }
         }
 
         public void End(PluginManager pluginManager)
         {
             _logger.Info("Data plugin closing ...");
 
-            _liveAggregator.Clear();
-            _postTimer.Stop();
+            Stop();
 
             _logger.Info("Data plugin closing DONE!");
         }
 
         public void Init(PluginManager pluginManager)
         {
-            _postTimer.Start();
-
-            _liveAggregator.Clear(); // just in case ... 
+            Start();
         }
 
         // ===========================================================
         // ===========================================================
-
-        private void Reset()
-        {
-            _liveAggregator.Clear();
-            _postTimer.Start();
-
-            _notifiedStop = false;
-
-            _internalErrorCount = 0;
-        }
 
         // THOUGHT: this one should be moved in a dedicated class.
         private async void PostData(object sender, ElapsedEventArgs e)
@@ -122,12 +129,11 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             {
                 try
                 {
-                    _postTimer.Stop();
+                    Stop();
                 }
                 catch { }
 
                 _logger.Error("WebAPI post stoped.");
-                _notifiedStop = true;
                 return;
             }
 
@@ -169,6 +175,36 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             }
         }
 
+        private void Start()
+        {
+            if(_notifiedStop == false )
+            {
+                return;
+            }
+
+            _internalErrorCount = 0;
+            _notifiedStop = false;
+            _postTimer.Start();
+            _liveAggregator.Clear();
+
+            _logger.Info("Fam Data Gathering plugin STARTED");
+        }
+
+        private void Stop()
+        {
+            if(_notifiedStop == true)
+            {
+                return;
+            }
+
+            _liveAggregator.Clear();
+            _postTimer.Stop();
+            _internalErrorCount = 0;
+            _notifiedStop = true;
+
+            _logger.Info("Fam Data Gathering plugin STOPPED");
+        }
+
         private bool ShouldStopTimer()
         {
             return _internalErrorCount >= 3;
@@ -185,7 +221,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             {
                 _logger.Info("Trying to restart plugin after errors ...");
 
-                Reset();
+                Start();
             }
         }
     }
