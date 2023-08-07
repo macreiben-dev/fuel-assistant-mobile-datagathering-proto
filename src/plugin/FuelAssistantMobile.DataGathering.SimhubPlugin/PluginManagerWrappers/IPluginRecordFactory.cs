@@ -1,6 +1,6 @@
 ﻿using SimHub.Plugins;
 
-namespace FuelAssistantMobile.DataGathering.SimhubPlugin
+namespace FuelAssistantMobile.DataGathering.SimhubPlugin.PluginManagerWrappers
 {
     public interface IPluginRecordFactory
     {

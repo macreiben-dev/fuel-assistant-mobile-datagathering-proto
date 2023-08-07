@@ -62,12 +62,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregations\Data.cs" />
-    <Compile Include="FileName.cs" />
+    <Compile Include="DataVessel.cs" />
     <Compile Include="Aggregations\ILiveAggregator.cs" />
     <Compile Include="Aggregations\LiveAggregator.cs" />
-    <Compile Include="IPluginRecordFactory.cs" />
     <Compile Include="IPluginRecordRepository.cs" />
-    <Compile Include="IWebApiForwarder.cs" />
+    <Compile Include="PluginManagerWrappers\IPluginRecordFactory.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\SimhubLogger.cs" />
     <Compile Include="PluginManagerWrappers\IPluginManagerAdapter.cs" />

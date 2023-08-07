@@ -182,9 +182,4 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             return _internalErrorCount > 0 && _internalErrorCount < 3;
         }
     }
-
-    public class DataVessel
-    {
-        public object data { get; set; }
-    }
 }
