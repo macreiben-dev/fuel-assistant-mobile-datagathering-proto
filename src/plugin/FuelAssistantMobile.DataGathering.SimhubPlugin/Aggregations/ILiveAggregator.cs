@@ -8,8 +8,10 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin.Aggregations
 
         void Add(object data);
 
+        void AddSessionTimeLeft(object sessionTimeLeft);
+
         void Clear();
 
-        object AsData();
+        Data AsData();
     }
 }

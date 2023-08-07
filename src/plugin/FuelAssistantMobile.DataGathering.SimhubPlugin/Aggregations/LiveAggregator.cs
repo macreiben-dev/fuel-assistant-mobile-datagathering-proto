@@ -11,35 +11,54 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin.Aggregations
 
         public bool IsDirty => _dirty;
 
-        public void AddSessionTimeLeft(string sessionTimeLeft)
+        public void AddSessionTimeLeft(object sessionTimeLeft)
         {
-            if(_sessionTimeLeft != sessionTimeLeft) {
-                _sessionTimeLeft = sessionTimeLeft;
+            string trimmedSessionTimeLeft = sessionTimeLeft
+                .ToString()
+                .Substring(0, 8);
 
-                _dirty = true;
+            if (_sessionTimeLeft != trimmedSessionTimeLeft)
+            {
+                _sessionTimeLeft = trimmedSessionTimeLeft;
+                
+                SetDirty();
             }
         }
-
         public void Add(object data)
         {
             _aggregatedData.Add(data);
 
-            _dirty = true;
+            SetDirty();
         }
 
         public void Clear()
         {
-            _dirty = false;
+            SetClean();
             _aggregatedData.Clear();
-            _sessionTimeLeft = string.Empty;
+            _sessionTimeLeft = string.Empty.ToString();
         }
 
-        public object AsData()
+        public Data AsData()
         {
-            return new
+            return new Data
             {
                 SessionTimeLeft = _sessionTimeLeft
             };
         }
+
+        private void SetDirty()
+        {
+            _dirty = true;
+        }
+
+        private void SetClean()
+        {
+            _dirty = true;
+        }
+    }
+
+    public sealed class Data
+    {
+        public string SessionTimeLeft { get; set; } = string.Empty;
     }
 }

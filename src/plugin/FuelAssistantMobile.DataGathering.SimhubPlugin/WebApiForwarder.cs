@@ -53,11 +53,11 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         {
             // THOUGHT: add call to service here to grab the data we want from plugin manager
 
-            if(_notifiedStop) return;
+            if (_notifiedStop) return;
 
-            var GameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
+            var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
 
-            _liveAggregator.Add(GameDataSessionTimeLeft);
+            _liveAggregator.AddSessionTimeLeft(gameDataSessionTimeLeft);
         }
 
         public void End(PluginManager pluginManager)
@@ -81,7 +81,6 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         private async void PostData(object sender, ElapsedEventArgs e)
         {
             // THOUGHT: check game status before doing anything. If it is not running. Then do nothing.
-            StringContent content = null;
             string jsonData = null;
             try
             {
@@ -111,12 +110,12 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
                 // Replace the following lines with your own logic to get the data you want to send
                 var dataToSend = new
                 {
-                    Data = _liveAggregator.AsData()
+                    data = _liveAggregator.AsData()
                 };
 
                 // Convert the data to JSON
                 jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dataToSend);
-                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
                 // Post the data to the WebAPI
                 var response = await _httpClient.PostAsync(WebApiUrl, content);
