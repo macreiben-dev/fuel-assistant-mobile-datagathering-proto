@@ -20,17 +20,18 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         private Timer _postTimer;
         private ILiveAggregator _liveAggregator;
         private ILogger _logger;
+        private PluginManager _pluginManager;
 
         // THOUGHT: make this configurable.
-        private readonly string webApiUrl = "https://localhost:900/api/inbound"; // Replace with your WebAPI URL
+        private readonly string webApiUrl = "https://localhost:32781/inbound"; // Replace with your WebAPI URL
 
-        public WebApiForwarder(PluginManager pluginManager)
-            : this(pluginManager, new SimhubLogger(), new LiveAggregator())
+        public WebApiForwarder()
+            : this(new SimhubLogger(), new LiveAggregator())
         {
             
         }
 
-        public WebApiForwarder(PluginManager manager, ILogger logger, ILiveAggregator aggregator)
+        public WebApiForwarder(ILogger logger, ILiveAggregator aggregator)
         {
             _httpClient = new HttpClient();
 
@@ -42,7 +43,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             _logger = logger;
         }
 
-        public PluginManager PluginManager { set => throw new NotImplementedException(); }
+        public PluginManager PluginManager { set => _pluginManager = value; }
 
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
         {
@@ -74,18 +75,24 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         private async void PostData(object sender, ElapsedEventArgs e)
         {
             // THOUGHT: check game status before doing anything. If it is not running. Then do nothing.
-
+            StringContent content = null;
+            string jsonData = null;
             try
             {
+                if(!_liveAggregator.IsDirty)
+                {
+                    return;
+                }
+
                 // Replace the following lines with your own logic to get the data you want to send
                 var dataToSend = new
                 {
-                    SessionTimeLeft = _liveAggregator.ToList()
+                    Data = _liveAggregator.AsData()
                 };
 
                 // Convert the data to JSON
-                var jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dataToSend);
-                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(dataToSend);
+                content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
                 // Post the data to the WebAPI
                 var response = await _httpClient.PostAsync(webApiUrl, content);
@@ -98,7 +105,10 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             }
             catch (Exception ex)
             {
-                _logger.Error("Issue during posting.", ex);
+                _logger.Error($"Issue during posting [{webApiUrl}].");
+                _logger.Error("Posted data is:");
+                _logger.Error(jsonData);
+                _logger.Error($"Exception is:", ex);
             }
         }
 
