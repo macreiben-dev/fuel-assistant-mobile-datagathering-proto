@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregations\Data.cs" />
     <Compile Include="FileName.cs" />
     <Compile Include="Aggregations\ILiveAggregator.cs" />
     <Compile Include="Aggregations\LiveAggregator.cs" />

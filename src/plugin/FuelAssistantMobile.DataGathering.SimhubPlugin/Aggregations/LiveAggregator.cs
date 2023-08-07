@@ -55,9 +55,4 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin.Aggregations
             _dirty = true;
         }
     }
-
-    public sealed class Data
-    {
-        public string SessionTimeLeft { get; set; } = string.Empty;
-    }
 }

@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Aggregations\LiveAggregatorTest.cs" />
     <Compile Include="PluginManagerWrapperTest.cs" />
+    <Compile Include="WebApiForwarderServiceTest.cs" />
     <Compile Include="WebApiForwarderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

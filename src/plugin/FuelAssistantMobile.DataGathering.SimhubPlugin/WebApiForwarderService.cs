@@ -1,6 +1,8 @@
 ﻿using FuelAssistantMobile.DataGathering.SimhubPlugin.Aggregations;
 using FuelAssistantMobile.DataGathering.SimhubPlugin.Logging;
 using FuelAssistantMobile.DataGathering.SimhubPlugin.Repositories;
+using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.Timers;
 
 namespace FuelAssistantMobile.DataGathering.SimhubPlugin
@@ -23,18 +25,22 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public WebApiForwarderService(
             ILiveAggregator aggregator,
             IStagingDataRepository dataRepository,
-            ILogger logger)
+            ILogger logger,
+            double postToApiTimerHz,
+            int autoReactivateTimer)
         {
-            _postTimer = new Timer(1000 / Frequency); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
+            _postTimer = new Timer(1000 / postToApiTimerHz); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
             _postTimer.Elapsed += PostData;
 
-            _autoReactivate = new Timer(5000);
+            _autoReactivate = new Timer(autoReactivateTimer);
             _autoReactivate.Elapsed += AutoReactivate;
 
             _dataRepository = dataRepository;
 
             _liveAggregator = aggregator;
             _logger = logger;
+
+            _notifiedStop = true;
         }
 
         public void HandleDataUpdate(IPluginRecordRepository pluginRecordRepository)
@@ -122,7 +128,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             }
 
             // Replace the following lines with your own logic to get the data you want to send
-            var dataToSend = new
+            var dataToSend = new DataVessel
             {
                 data = _liveAggregator.AsData()
             };
@@ -175,5 +181,10 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         {
             return _internalErrorCount > 0 && _internalErrorCount < 3;
         }
+    }
+
+    public class DataVessel
+    {
+        public object data { get; set; }
     }
 }

@@ -13,22 +13,9 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
     [PluginName("Fam Data Plugin")]
     public sealed partial class WebApiForwarder : IDataPlugin
     {
-        private const int Frequency = 10; // 10Hz
-
-        private Timer _postTimer;
-        private Timer _autoReactivate;
-        
-        private readonly ILiveAggregator _liveAggregator;
-        private readonly IStagingDataRepository _dataRepository;
         private readonly IPluginRecordFactory _pluginRecordFactory;
-        private readonly IStagingDataRepository dataRepository;
         private readonly ILogger _logger;
         private readonly WebApiForwarderService _webApiForwarderService;
-        private PluginManager _pluginManager;
-
-        private int _internalErrorCount = 0;
-        private bool _notifiedStop = false;
-        private bool _firstLaunch = false;
 
         public WebApiForwarder()
             : this(
@@ -53,10 +40,14 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             _webApiForwarderService = new WebApiForwarderService(
                 aggregator,
                 dataRepository,
-                logger);
+                logger,
+                10,
+                5000);
         }
 
         // ===========================================================
+
+        private PluginManager _pluginManager;
 
         public PluginManager PluginManager { set => _pluginManager = value; }
 
@@ -88,6 +79,5 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         }
 
         // ===========================================================
-
     }
 }
