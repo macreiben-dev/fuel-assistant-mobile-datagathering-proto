@@ -8,6 +8,9 @@ using System.Timers;
 
 namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 {
+    [PluginDescription("Broadcast data to a remote API to work on race strategy.")]
+    [PluginAuthor("Christian \"MacReiben\" Finel")]
+    [PluginName("Fam Data Plugin")]
     public sealed class WebApiForwarder : IDataPlugin
     {
         private const int Frequency = 10; // 10Hz
@@ -19,7 +22,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public WebApiForwarder(PluginManager pluginManager, HttpClient httpClient)
         {
             _httpClient = new HttpClient();
-            _postTimer = new System.Timers.Timer(1000 / Frequency); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
+            _postTimer = new Timer(1000 / Frequency); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
             _postTimer.Elapsed += PostData;
             _httpClient = httpClient;
         }
@@ -41,7 +44,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             _postTimer.Start();
         }
 
-        private async void PostData(object sender, System.Timers.ElapsedEventArgs e)
+        private async void PostData(object sender, ElapsedEventArgs e)
         {
             //if (CurrentContext == UpdateContext.Simulation)
             //{
