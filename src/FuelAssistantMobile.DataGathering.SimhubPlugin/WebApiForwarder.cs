@@ -19,18 +19,21 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         // THOUGHT: make this configurable.
         private readonly string webApiUrl = "https://example.com/api/data"; // Replace with your WebAPI URL
 
-        public WebApiForwarder(PluginManager pluginManager, HttpClient httpClient)
+        public WebApiForwarder(PluginManager pluginManager)
         {
+            // THOUGHT: create the http client when the game starts, and destroy it when game stop.
             _httpClient = new HttpClient();
+
             _postTimer = new Timer(1000 / Frequency); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
             _postTimer.Elapsed += PostData;
-            _httpClient = httpClient;
         }
 
         public PluginManager PluginManager { set => throw new NotImplementedException(); }
 
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
         {
+            // THOUGHT: add call to service here to grab the data we want.
+
             throw new NotImplementedException();
         }
 
@@ -46,6 +49,8 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 
         private async void PostData(object sender, ElapsedEventArgs e)
         {
+            // THOUGHT: check game status before doing anything. If it is not running. Then do nothing.
+
             //if (CurrentContext == UpdateContext.Simulation)
             //{
                 try

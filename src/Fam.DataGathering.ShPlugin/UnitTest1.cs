@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Fam.DataGathering.ShPlugin
 {
-    public class UnitTest1
+    public class WebApiForwarder
     {
         [Fact]
         public void Should_build_webapi_forwarder()
