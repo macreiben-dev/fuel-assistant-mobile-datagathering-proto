@@ -22,6 +22,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 
         private HttpClient _httpClient;
         private Timer _postTimer;
+        private Timer _autoReactivate;
         private ILiveAggregator _liveAggregator;
         private ILogger _logger;
         private PluginManager _pluginManager;
@@ -42,9 +43,22 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             _postTimer = new Timer(1000 / Frequency); // Interval in milliseconds for 10Hz (1000ms / 10Hz = 100ms)
             _postTimer.Elapsed += PostData;
 
+            _autoReactivate = new Timer(5000);
+            _autoReactivate.Elapsed += AutoReactivate;
+
             _liveAggregator = aggregator;
 
             _logger = logger;
+        }
+
+        private void AutoReactivate(object sender, ElapsedEventArgs e)
+        {
+            if(_notifiedStop && _internalErrorCount >= 3)
+            {
+                _logger.Info("Trying to restart plugin after errors ...");
+
+                Reset();
+            }
         }
 
         public PluginManager PluginManager { set => _pluginManager = value; }
@@ -54,6 +68,13 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             // THOUGHT: add call to service here to grab the data we want from plugin manager
 
             if (_notifiedStop) return;
+
+            var start = pluginManager.GetPropertyValue("DataCorePlugin.GameRunning");
+
+            if (!Convert.ToBoolean(start))
+            {
+                return;
+            }
 
             var gameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
 
@@ -76,6 +97,17 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 
             _liveAggregator.Clear(); // just in case ... 
         }
+
+        private void Reset()
+        {
+            _liveAggregator.Clear();
+            _postTimer.Start();
+
+            _notifiedStop = false;
+
+            _internalErrorCount = 0;
+        }
+
 
         // THOUGHT: this one should be moved in a dedicated class.
         private async void PostData(object sender, ElapsedEventArgs e)
@@ -122,7 +154,9 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    // Handle error cases here
+                    _internalErrorCount++;
+
+                    _logger.Error($"Issue during posting [{WebApiUrl}] - [{_internalErrorCount}] error count.");
                     _logger.Error($"API failed returned code is not OK - [{response.StatusCode}]");
                 }
             }
@@ -135,18 +169,6 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
                 _logger.Error(jsonData);
                 _logger.Error($"Exception is:", ex);
             }
-        }
-
-        // THOUGHT: to be moved in repository
-        private object GetRPM()
-        {
-            throw new NotImplementedException();
-        }
-
-        // THOUGHT: to be moved in repository
-        private object GetSpeed()
-        {
-            throw new NotImplementedException();
         }
     }
 }
