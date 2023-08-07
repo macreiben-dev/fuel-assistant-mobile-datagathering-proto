@@ -18,7 +18,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         private const int Frequency = 10; // 10Hz
 
         // THOUGHT: make this configurable.
-        private const string WebApiUrl = "https://localhost:32782/Inbound";
+        private const string WebApiUrl = "https://localhost:32786/Inbound";
 
         private HttpClient _httpClient;
         private Timer _postTimer;
@@ -26,10 +26,13 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         private ILogger _logger;
         private PluginManager _pluginManager;
 
+        private int _internalErrorCount = 0;
+        private bool _notifiedStop = false;
+
         public WebApiForwarder()
             : this(new SimhubLogger(), new LiveAggregator())
         {
-            
+
         }
 
         public WebApiForwarder(ILogger logger, ILiveAggregator aggregator)
@@ -50,6 +53,8 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         {
             // THOUGHT: add call to service here to grab the data we want from plugin manager
 
+            if(_notifiedStop) return;
+
             var GameDataSessionTimeLeft = pluginManager.GetPropertyValue("DataCorePlugin.GameData.SessionTimeLeft");
 
             _liveAggregator.Add(GameDataSessionTimeLeft);
@@ -58,7 +63,7 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         public void End(PluginManager pluginManager)
         {
             _logger.Info("Data plugin closing ...");
-            
+
             _liveAggregator.Clear();
             _postTimer.Stop();
 
@@ -80,7 +85,25 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             string jsonData = null;
             try
             {
-                if(!_liveAggregator.IsDirty)
+                if (_internalErrorCount >= 3)
+                {
+                    try
+                    {
+                        _postTimer.Stop();
+                    }
+                    catch { }
+
+                    _logger.Error("WebAPI post stoped.");
+                    _notifiedStop = true;
+                    return;
+                }
+
+                if (_internalErrorCount > 0 && _internalErrorCount < 3)
+                {
+                    _logger.Warn($"Retrying to contact API - error count is [{_internalErrorCount}]");
+                }
+
+                if (!_liveAggregator.IsDirty)
                 {
                     return;
                 }
@@ -106,7 +129,9 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
             }
             catch (Exception ex)
             {
-                _logger.Error($"Issue during posting [{webApiUrl}].");
+                _internalErrorCount++;
+
+                _logger.Error($"Issue during posting [{WebApiUrl}] - [{_internalErrorCount}] error count.");
                 _logger.Error("Posted data is:");
                 _logger.Error(jsonData);
                 _logger.Error($"Exception is:", ex);
