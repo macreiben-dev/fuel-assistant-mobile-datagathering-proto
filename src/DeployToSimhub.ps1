@@ -7,7 +7,7 @@ $isSimhubInstallationDirectoryValid = Test-Path $SimhubInstallationDirectory
 $isArtifactOutputPathValid = Test-Path $ArtifactOutputPath
 
 if ($isSimhubInstallationDirectoryValid -eq $false) {
-  Write-Error("Simub installation directory is invalid")
+  Write-Host("Simub installation directory is invalid")
   exit 1
 }
 
@@ -16,14 +16,14 @@ if ($isArtifactOutputPathValid -eq $false) {
   exit 1
 }
 
-Write-Information "Simhub installation path is:   $SimhubInstallationDirectory"
-Write-Information "Artifact output path is:       $isArtifactOutputPathValid"
+Write-Host "Simhub installation path is:   $isSimhubInstallationDirectoryValid"
+Write-Host "Artifact output path is:       $isArtifactOutputPathValid"
 
-$Source = "$ArtifactOutputPath/FuelAssistantMobile.DataGathering.*"
+$Source = $ArtifactOutputPath + "FuelAssistantMobile.DataGathering.*"
 $Destination = $SimhubInstallationDirectory
 
-Write-Information "-------------------------------------------------------------"
-Write-Information "Source parameter:            $Source"
-Write-Information "Destination parameter:       $Destination"
+Write-Host "-------------------------------------------------------------"
+Write-Host "Source parameter:            $Source"
+Write-Host "Destination parameter:       $Destination"
 
 Copy-Item $Source $Destination -Verbose
