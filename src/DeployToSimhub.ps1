@@ -19,11 +19,11 @@ if ($isArtifactOutputPathValid -eq $false) {
 Write-Host "Simhub installation path is:   $isSimhubInstallationDirectoryValid"
 Write-Host "Artifact output path is:       $isArtifactOutputPathValid"
 
-$Source = $ArtifactOutputPath + "FuelAssistantMobile.DataGathering.*"
+$Source = $ArtifactOutputPath + "\\FuelAssistantMobile.DataGathering.SimhubPlugin.*"
 $Destination = $SimhubInstallationDirectory
 
 Write-Host "-------------------------------------------------------------"
 Write-Host "Source parameter:            $Source"
 Write-Host "Destination parameter:       $Destination"
 
-Copy-Item $Source $Destination -Verbose
+Copy-Item -Verbose -Force $Source $Destination
