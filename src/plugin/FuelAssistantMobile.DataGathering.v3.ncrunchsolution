@@ -1,6 +1,9 @@
 ﻿<SolutionConfiguration>
   <Settings>
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
+    <MetricsExclusionList>
+      <Value>Fam.DataGathering.ShPlugin\Fam.DataGathering.ShPlugin.Tests.csproj</Value>
+    </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
 </SolutionConfiguration>

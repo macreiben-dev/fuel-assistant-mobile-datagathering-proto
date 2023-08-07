@@ -6,8 +6,6 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin.Aggregations
     {
         bool IsDirty { get; }
 
-        void Add(object data);
-
         void AddSessionTimeLeft(object sessionTimeLeft);
 
         void Clear();

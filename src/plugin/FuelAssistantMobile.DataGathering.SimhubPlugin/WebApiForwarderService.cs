@@ -18,7 +18,6 @@ namespace FuelAssistantMobile.DataGathering.SimhubPlugin
         private Timer _autoReactivate;
 
         private readonly IStagingDataRepository _dataRepository;
-        private readonly IWebApiForwarder _forwarder;
         private readonly ILiveAggregator _liveAggregator;
         private readonly ILogger _logger;
 
