@@ -1,5 +1,6 @@
 .vs/
 bin/
 obj/
-packages/
+src/packages/
 *.user
+*.cache
